@@ -6,5 +6,7 @@ COPY Gemfile /data_search/Gemfile
 COPY Gemfile.lock /data_search/Gemfile.lock
 RUN bundle install
 
+ENV BUNDLER_VERSION=2.1.4
+
 # Configure the main process to run when running the image
 CMD ["rails", "server", "-b", "0.0.0.0"]
