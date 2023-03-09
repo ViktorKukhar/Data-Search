@@ -4,9 +4,8 @@ RUN apt-get update -qq && apt-get install -y nodejs postgresql-client
 WORKDIR /data_search
 COPY Gemfile /data_search/Gemfile
 COPY Gemfile.lock /data_search/Gemfile.lock
+RUN gem install bundler -v 2.0.1
 RUN bundle install
-
-ENV BUNDLER_VERSION=2.1.4
 
 # Configure the main process to run when running the image
 CMD ["rails", "server", "-b", "0.0.0.0"]
