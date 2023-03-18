@@ -9,11 +9,11 @@
 
 <table class="table">
   <tbody id="table-body">
-      <% @items.each do |item| %>
+      <% @json_data.each do |data| %>
     <tr>
-      <td><%= item.name %></td>
-      <td><%= item.category %></td>
-      <td><%= item.designed_by %></td>
+      <td><%= data['Name'] %></td>
+      <td><%= data['Type'] %></td>
+      <td><%= data['Designed by'] %></td>
     </tr>
       <% end %>
    </tbody>

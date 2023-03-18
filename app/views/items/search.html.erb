@@ -1,12 +1,12 @@
 
 <table class="table">
   <tbody id="table-body">
-      <% @items.each do |item| %>
-    <tr>
-      <td><%= item.name %></td>
-      <td><%= item.category %></td>
-      <td><%= item.designed_by %></td>
-    </tr>
-      <% end %>
+    <% @json_data.each do |data| %>
+  <tr>
+    <td><%= data['Name'] %></td>
+    <td><%= data['Type'] %></td>
+    <td><%= data['Designed by'] %></td>
+  </tr>
+    <% end %>
 
   </tbody>
