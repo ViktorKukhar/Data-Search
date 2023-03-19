@@ -2,30 +2,56 @@ require 'rails_helper'
 require_relative '../../app/controllers/concerns/search_method'
 
 RSpec.describe SearchMethod do
-  let(:search_class) { Class.new { extend SearchMethod } }
+  include SearchMethod
+
+  let(:json_data) do
+    [
+      {'Name' => 'Python', 'Type' => 'Scripting', 'Designed by' => 'Guido van Rossum'},
+      {'Name' => 'Ruby', 'Type' => 'Scripting', 'Designed by' => 'Yukihiro Matsumoto'},
+      {'Name' => 'Java', 'Type' => 'Compiled', 'Designed by' => 'James Gosling'},
+      {'Name' => 'C++', 'Type' => 'Compiled', 'Designed by' => 'Bjarne Stroustrup'},
+      {'Name' => 'C#', 'Type' => 'Compiled', 'Designed by' => 'Microsoft'}
+    ]
+  end
+
+  before do
+    @json_data = json_data.dup
+  end
 
   describe '#search_method' do
-    let(:items) do
-      [
-        FactoryBot.create(:item, name: 'C++', category: 'Programming Language', designed_by: 'Yukihiro Matsumoto'),
-        FactoryBot.create(:item, name: 'Kotlin', category: 'Programming Language', designed_by: 'Guido van Rossum'),
-        FactoryBot.create(:item, name: 'Java', category: 'Programming Language', designed_by: 'James Gosling')
-      ]
+    context 'when searching for a term that matches a language name' do
+      it 'returns the language with the highest match precision first' do
+        result = search_method('ruby')
+        expect(result).to eq [json_data[1]]
+      end
     end
 
-    before do
-      search_class.instance_variable_set(:@items, Item.all)
-    end
+      context 'when searching for a term that matches a language type' do
+        it 'returns the language with the highest match precision first' do
+          result = search_method('compiled')
+          expect(result).to eq [json_data[3],json_data[4],json_data[2]]
+        end
+      end
 
-    it 'returns all items that match the query terms in any of the fields' do
-      result = search_class.search_method('programming language')
-      expect(result).to contain_exactly(*items)
-    end
+      context 'when searching for a term that matches a designer name' do
+        it 'returns the language with the highest match precision first' do
+          result = search_method('matsumoto')
+          expect(result).to eq [json_data[1]]
+        end
+      end
 
-    it 'excludes items that contain excluded terms' do
-      result = search_class.search_method('programming -java')
-      expect(result).to contain_exactly(items[0], items[1])
-    end
+      context 'when searching for multiple terms' do
+        it 'returns the languages that match all terms' do
+          result = search_method('scripting ruby')
+          expect(result).to eq [json_data[1]]
+        end
+      end
 
+      context 'when searching for a term that is excluded' do
+        it 'excludes the languages that match the excluded term' do
+          result = search_method('scripting -ruby')
+          expect(result).to eq [json_data[0]]
+        end
+      end
   end
 end
